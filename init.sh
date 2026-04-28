@@ -103,6 +103,92 @@ cat <<EOF > .vscode/settings.json
 }
 EOF
 
+echo "Creating project README.md..."
+
+cat <<EOF > README.md
+# $(basename "$(pwd)")
+
+## 📌 Project Overview
+Short description of your project.
+
+---
+
+## ⚙️ Environment
+
+This project uses a virtual environment:
+
+\`\`\`bash
+source $ENV_NAME/bin/activate
+\`\`\`
+
+Python version:
+\`\`\`
+python$PYTHON_VERSION
+\`\`\`
+
+---
+
+## 📦 Installed Packages
+
+Depending on your setup, this project may include:
+
+EOF
+
+# Append installed packages dynamically
+[ "$INSTALL_NUMPY" = "y" ] && echo "- numpy" >> README.md
+[ "$INSTALL_TORCH" = "y" ] && echo "- torch / torchaudio" >> README.md
+[ "$INSTALL_TF" = "y" ] && echo "- tensorflow" >> README.md
+
+cat <<EOF >> README.md
+
+---
+
+## ▶️ Usage
+
+Activate the environment:
+
+\`\`\`bash
+source $ENV_NAME/bin/activate
+\`\`\`
+
+Run the notebook:
+
+\`\`\`bash
+jupyter notebook
+\`\`\`
+
+or open in VS Code and select the kernel:
+
+\`\`\`
+Python ($ENV_NAME)
+\`\`\`
+
+---
+
+## 📁 Structure
+
+\`\`\`
+.
+├── main.ipynb
+├── $ENV_NAME/
+└── README.md
+\`\`\`
+
+---
+
+## 🧠 Notes
+
+- The virtual environment is local to this project
+- Do not commit the environment folder to git
+- Add it to \`.gitignore\` if needed
+
+---
+
+## 📄 License
+
+Add your license here.
+EOF
+
 # --- Move everything one level up and remove bootstrap folder ---
 
 echo "Finalizing project structure..."
@@ -115,12 +201,18 @@ cd "$PARENT_DIR" || exit
 
 echo "Moving project files out of $BOOTSTRAP_DIR..."
 
-# Move all files including hidden ones
+# Move everything including hidden files
 shopt -s dotglob
 mv "$BOOTSTRAP_DIR"/* .
 shopt -u dotglob
 
-# Remove the bootstrap folder
+# --- Remove bootstrap artifacts from final project ---
+echo "Cleaning bootstrap files..."
+
+rm -rf init.sh
+rm -rf templates
+
+# --- Remove the bootstrap folder itself ---
 rm -rf "$BOOTSTRAP_DIR"
 
 echo "Project moved to: $PARENT_DIR"
