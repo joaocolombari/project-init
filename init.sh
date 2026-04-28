@@ -212,6 +212,11 @@ __pycache__/
 # macOS
 .DS_Store
 
+# Audio / data
+*.wav
+*.flac
+*.mp3
+
 # Logs
 *.log
 
