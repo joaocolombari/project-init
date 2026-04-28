@@ -62,9 +62,6 @@ read -p "Install TensorFlow? (y/n): " INSTALL_TF
 # Core tools
 pip install ipykernel notebook soundfile matplotlib onnx onnxruntime
 
-# --- Kernel ---
-python -m ipykernel install --user --name=$ENV_NAME --display-name "Python ($ENV_NAME)"
-
 # --- Create notebook ---
 echo "Creating main.ipynb..."
 
@@ -168,7 +165,8 @@ mkdir -p .vscode
 
 cat <<EOF > .vscode/settings.json
 {
-    "python.defaultInterpreterPath": "$(pwd)/$ENV_NAME/bin/python"
+    "python.defaultInterpreterPath": "$TARGET_PARENT/$ENV_NAME/bin/python",
+    "python.terminal.activateEnvironment": true
 }
 EOF
 
@@ -187,6 +185,14 @@ shopt -u dotglob
 echo "Removing bootstrap folder..."
 rm -rf "$BOOTSTRAP_ROOT"
 
+# --- Re-register kernel AFTER move ---
+echo "Registering kernel (final path)..."
+
+cd "$TARGET_PARENT" || exit
+source "$ENV_NAME/bin/activate"
+
+python -m ipykernel install --user --name=$ENV_NAME --display-name "Python ($ENV_NAME)"
+
 # --- Open VS Code ---
 echo "Opening VS Code..."
 cd "$TARGET_PARENT" || exit
@@ -195,3 +201,4 @@ code .
 echo "=== CLEAN SETUP COMPLETE ==="
 echo "Activate env with: source $ENV_NAME/bin/activate"
 echo "Select kernel: Python ($ENV_NAME)"
+echo "If kernel doesn't appear: restart VS Code or reload window (Cmd+Shift+P → Reload Window)"
