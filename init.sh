@@ -24,6 +24,9 @@ if [ -n "$REPO_URL" ]; then
     if [ "$REMOVE_GIT" = "y" ]; then
         rm -rf .git
         git init
+        git rm -r --cached $ENV_NAME
+        git add .gitignore
+        git commit -m "Ignore environment"
         echo "Initialized fresh git repository."
     fi
 fi
@@ -179,14 +182,42 @@ Python ($ENV_NAME)
 ## 🧠 Notes
 
 - The virtual environment is local to this project
-- Do not commit the environment folder to git
-- Add it to \`.gitignore\` if needed
+- \`.gitignore\` contains the env and audio files for keeping those untracked  
 
 ---
 
 ## 📄 License
 
 Add your license here.
+EOF
+
+echo "Creating .gitignore..."
+
+cat <<EOF > .gitignore
+# Virtual environment
+$ENV_NAME/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Data (optional - uncomment if needed)
+# data/
+# outputs/
 EOF
 
 # --- Move everything one level up and remove bootstrap folder ---
