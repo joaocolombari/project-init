@@ -103,9 +103,33 @@ cat <<EOF > .vscode/settings.json
 }
 EOF
 
-# --- Open VS Code ---
+# --- Move everything one level up and remove bootstrap folder ---
+
+echo "Finalizing project structure..."
+
+CURRENT_DIR="$(pwd)"
+PARENT_DIR="$(dirname "$CURRENT_DIR")"
+BOOTSTRAP_DIR="$(basename "$CURRENT_DIR")"
+
+cd "$PARENT_DIR" || exit
+
+echo "Moving project files out of $BOOTSTRAP_DIR..."
+
+# Move all files including hidden ones
+shopt -s dotglob
+mv "$BOOTSTRAP_DIR"/* .
+shopt -u dotglob
+
+# Remove the bootstrap folder
+rm -rf "$BOOTSTRAP_DIR"
+
+echo "Project moved to: $PARENT_DIR"
+
+# Open VS Code from final location
 echo "Opening VS Code..."
 code .
+
+echo "=== CLEAN SETUP COMPLETE ==="
 
 echo "=== DONE ==="
 echo "Activate env with: source $ENV_NAME/bin/activate"
