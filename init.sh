@@ -68,7 +68,20 @@ echo "Creating main.ipynb..."
 python - <<EOF
 import nbformat as nbf
 
+env_path = "$TARGET_PARENT/$ENV_NAME/bin/python"
+
 nb = nbf.v4.new_notebook()
+
+nb.metadata["kernelspec"] = {
+    "name": "python3",
+    "display_name": "Python ($ENV_NAME)",
+    "language": "python"
+}
+
+nb.metadata["language_info"] = {
+    "name": "python",
+    "version": ""
+}
 
 nb.cells = [
     nbf.v4.new_markdown_cell("# Main Notebook\n\nEnvironment ready."),
@@ -166,7 +179,9 @@ mkdir -p .vscode
 cat <<EOF > .vscode/settings.json
 {
     "python.defaultInterpreterPath": "$TARGET_PARENT/$ENV_NAME/bin/python",
-    "python.terminal.activateEnvironment": true
+    "python.terminal.activateEnvironment": true,
+    "jupyter.kernels.filter": [],
+    "jupyter.askForKernelRestart": false
 }
 EOF
 
